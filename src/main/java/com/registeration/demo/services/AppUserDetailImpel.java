@@ -22,20 +22,22 @@ public class AppUserDetailImpel implements UserDetailsService {
 
     @Override
     public UserDetails loadUserByUsername(String username) throws UsernameNotFoundException {
-        Optional<UserApp> userOptional = userRepository.findUserByUsername(username);
+        Optional<UserApp> userOptional = userRepository.findByUsername(username);
         if (!userOptional.isPresent()) {
             log.error("User {} not found in database !", username);
             throw  new UsernameNotFoundException(String.format(USER_NOT_FOUND_MSG, username));
         }
+
         UserApp appUser = userOptional.get();
+
         return org.springframework.security.core.userdetails.User//
                 .withUsername(username)//
                 .password(appUser.getPassword())//
                 .authorities(appUser.getAuthorities())//
-                .accountExpired(false)//
-                .accountLocked(appUser.isAccountNonLocked())//
-                .credentialsExpired(false)//
-                .disabled(appUser.isEnabled())//
+                .accountExpired(appUser.getAccountExpired())//
+                .accountLocked(!appUser.isAccountNonLocked())//
+                .credentialsExpired(appUser.getCredentialsExpired())//
+                .disabled(!appUser.getEnabled())//
                 .build();
     }
 }

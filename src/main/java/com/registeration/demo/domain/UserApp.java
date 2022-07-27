@@ -65,7 +65,13 @@ public class UserApp implements UserDetails {
     private Boolean locked = false;
 
     @Column(nullable = false, name = "enabled")
-    private Boolean enabled = false;
+    private Boolean enabled = true;
+
+    @Column(nullable = false, name = "accountExpired")
+    private Boolean accountExpired = false;
+
+    @Column(nullable = false, name = "credentialsExpired")
+    private Boolean credentialsExpired = false;
 
     public  UserApp(String firstName,String lastName, String username, String password, Role role  ){
         this.firstName=firstName;
@@ -92,7 +98,7 @@ public class UserApp implements UserDetails {
 
     @Override
     public boolean isAccountNonExpired() {
-        return true;
+        return !accountExpired;
     }
 
     @Override
@@ -102,7 +108,7 @@ public class UserApp implements UserDetails {
 
     @Override
     public boolean isCredentialsNonExpired() {
-        return true;
+        return !credentialsExpired;
     }
 
     @Override

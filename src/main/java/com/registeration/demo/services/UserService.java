@@ -11,8 +11,7 @@ import java.util.Set;
 public interface UserService {
     UserApp getUser(String userName);
     UserApp saveUser(UserApp user);
-    Role saveRole(Role role);
-    void addRoleToUser(String userName, String roleName);
+    void addRoleToUser(String userName, Role roleName);
     List<UserApp> getUsers();
-    Set<String> refreshToken(String refreshToken);
+
 }
