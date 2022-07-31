@@ -13,5 +13,6 @@ public interface UserService {
     UserApp saveUser(UserApp user);
     void addRoleToUser(String userName, Role roleName);
     List<UserApp> getUsers();
+    int enableUser(String username);
 
 }

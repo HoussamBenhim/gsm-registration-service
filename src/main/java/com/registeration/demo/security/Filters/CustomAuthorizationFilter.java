@@ -23,32 +23,42 @@ import static org.springframework.http.HttpHeaders.AUTHORIZATION;
 @RequiredArgsConstructor
 public class CustomAuthorizationFilter extends OncePerRequestFilter {
     private final JwtUtils jwtUtils;
+
     @Override
     protected void doFilterInternal(HttpServletRequest request, HttpServletResponse response, FilterChain filterChain) throws ServletException, IOException {
-        if (request.getServletPath().equals("/login")||
-            request.getServletPath().equals("/refreshToken")||
-            request.getServletPath().equals("/signup")
+        if (request.getServletPath().equals("/login") ||
+                request.getServletPath().equals("/refreshToken") ||
+                request.getServletPath().equals("/registration/signup") ||
+                request.getServletPath().equals("/registration/confirm") ||
+                request.getServletPath().equals("/favicon.ico")||
+                request.getServletPath().equals("/actuator/health")
         ) {
             filterChain.doFilter(request, response);
         } else {
             log.info("Processing Authorization .... ");
             String token = jwtUtils.resolveToken(request);
-            boolean isValidToken = jwtUtils.validateToken(token);
-            if (token != null && isValidToken) {
-                try {
-                    String username = jwtUtils.getUsername(token);
-                    log.info("logging with username : {}", username);
-                    Collection<SimpleGrantedAuthority> authorities = jwtUtils.getAuthorities(token);
-                    UsernamePasswordAuthenticationToken authenticationToken =
-                            new UsernamePasswordAuthenticationToken(username, null, authorities);
-                    SecurityContextHolder.getContext().setAuthentication(authenticationToken);
-                    filterChain.doFilter(request, response);
-                }catch (Exception e){
-                    log.error("error occurred at authorization process : {}", e.getMessage());
-                    response.setHeader("ERROR", e.getMessage());
-                    response.setStatus(HttpStatus.UNAUTHORIZED.value());
-                    jwtUtils.writeOutputStream(response, "error_message", "error", e.getMessage(), "error at logging");
+            if (token != null) {
+                boolean isValidToken = jwtUtils.validateToken(token);
+                if (isValidToken) {
+                    try {
+                        String username = jwtUtils.getUsername(token);
+                        log.info("logging with username : {}", username);
+                        Collection<SimpleGrantedAuthority> authorities = jwtUtils.getAuthorities(token);
+                        UsernamePasswordAuthenticationToken authenticationToken =
+                                new UsernamePasswordAuthenticationToken(username, null, authorities);
+                        SecurityContextHolder.getContext().setAuthentication(authenticationToken);
+                        filterChain.doFilter(request, response);
+                    } catch (Exception e) {
+                        log.error("error occurred at authorization process : {}", e.getMessage());
+                        response.setHeader("ERROR", e.getMessage());
+                        response.setStatus(HttpStatus.UNAUTHORIZED.value());
+                        jwtUtils.writeOutputStream(response, "error_message", "error", e.getMessage(), "error at logging");
+                    }
                 }
+            }else{
+                log.info("Token absent!");
+                response.setStatus(HttpStatus.UNAUTHORIZED.value());
+                jwtUtils.writeOutputStream(response, "error_message", "error", "Token Absent", "error at logging");
             }
         }
     }

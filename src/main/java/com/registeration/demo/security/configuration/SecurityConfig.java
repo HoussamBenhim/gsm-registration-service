@@ -56,7 +56,7 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter {
         http.addFilterBefore(new CustomAuthorizationFilter(jwtUtils), UsernamePasswordAuthenticationFilter.class);
     }
     private  String[] permittedUrls(){
-        return new String[]{"/","/login","/signup"} ;
+        return new String[]{"/","/login","/registration/signup", "/registration/confirm", "/actuator/health"} ;
     }
     private  String[] permittedGetUrlsForAdmins(){
         return new String[]{"/api/users"} ;

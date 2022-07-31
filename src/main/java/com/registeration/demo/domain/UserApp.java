@@ -65,7 +65,7 @@ public class UserApp implements UserDetails {
     private Boolean locked = false;
 
     @Column(nullable = false, name = "enabled")
-    private Boolean enabled = true;
+    private Boolean enabled = false;
 
     @Column(nullable = false, name = "accountExpired")
     private Boolean accountExpired = false;

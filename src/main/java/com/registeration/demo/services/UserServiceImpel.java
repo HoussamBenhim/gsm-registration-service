@@ -50,8 +50,10 @@ public class UserServiceImpel implements UserService{
         log.info("Fetching all users {}");
         return userRepository.findAll();
     }
-
-
+    @Override
+    public int enableUser(String username){
+        return userRepository.enableAppUser(username);
+    }
 
 
 }
