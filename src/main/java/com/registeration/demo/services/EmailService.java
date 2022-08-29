@@ -42,7 +42,7 @@ public class EmailService{
             log.info("mail sent successfully to : {} ", emailTo);
         }catch (Exception e){
             log.error("Error sending the email to : {}", emailTo);
-            log.error("Error message", e.getMessage());
+            log.error("Error message : {}", e.getMessage());
             throw new IllegalStateException("failed to send email");
         }
     }
