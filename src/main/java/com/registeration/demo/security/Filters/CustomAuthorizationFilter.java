@@ -1,6 +1,6 @@
 package com.registeration.demo.security.Filters;
 
-import com.registeration.demo.Exceptions.CustomException;
+
 import com.registeration.demo.security.JwtService.JwtUtils;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -17,7 +17,7 @@ import javax.servlet.http.HttpServletResponse;
 import java.io.IOException;
 import java.util.Collection;
 
-import static org.springframework.http.HttpHeaders.AUTHORIZATION;
+
 
 @Slf4j
 @RequiredArgsConstructor
@@ -30,6 +30,7 @@ public class CustomAuthorizationFilter extends OncePerRequestFilter {
                 request.getServletPath().equals("/refreshToken") ||
                 request.getServletPath().equals("/registration/signup") ||
                 request.getServletPath().equals("/registration/confirm") ||
+                request.getServletPath().startsWith("/registration/student") ||
                 request.getServletPath().equals("/favicon.ico")||
                 request.getServletPath().equals("/actuator/health")
         ) {
