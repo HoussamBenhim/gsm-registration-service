@@ -17,7 +17,7 @@ public class InitCommandRunner implements CommandLineRunner {
     private final UserRepository userRepository;
     @Override
     public void run(String... args) throws Exception {
-        UserApp user= new UserApp("houssam", "benhim","benhim.houssam@gmail.com", "ag7gDD35" , Role.ROLE_ADMIN);
+            UserApp user= new UserApp("houssam", "benhim","benhim.houssam@gmail.com", "ag7gDD35" , Role.ROLE_ADMIN);
         userService.saveUser(user);
         int enabled =userRepository.enableAppUser("benhim.houssam@gmail.com");
     }

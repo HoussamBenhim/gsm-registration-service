@@ -1,19 +1,23 @@
 package com.registeration.demo.services;
 
 import com.registeration.demo.Exceptions.CustomException;
-import com.registeration.demo.domain.ConfirmationToken;
-import com.registeration.demo.domain.RegistrationRequest;
-import com.registeration.demo.domain.Role;
-import com.registeration.demo.domain.UserApp;
+import com.registeration.demo.domain.*;
 import com.registeration.demo.repositories.ConfirmationTokenRepository;
+import com.registeration.demo.security.JwtService.JwtUtils;
 import lombok.RequiredArgsConstructor;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.http.HttpStatus;
+import org.springframework.security.authentication.AuthenticationManager;
+import org.springframework.security.authentication.BadCredentialsException;
+import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
+import org.springframework.security.core.authority.SimpleGrantedAuthority;
+import org.springframework.security.core.userdetails.UserDetails;
+import org.springframework.security.core.userdetails.UserDetailsService;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.stereotype.Service;
 
 import java.time.LocalDateTime;
-import java.util.UUID;
+import java.util.*;
 
 @Service
 public class RegistrationService {
@@ -23,10 +27,18 @@ public class RegistrationService {
     private final UserService userService;
     private final ConfirmationTokenService confirmationTokenService;
 
-    public RegistrationService(EmailService emailService, UserService userService, ConfirmationTokenService confirmationTokenService) {
+    private final AuthenticationManager authenticationManager;
+
+    private final UserDetailsService userDetailsService;
+    private final JwtUtils jwtUtils;
+
+    public RegistrationService(EmailService emailService, UserService userService, ConfirmationTokenService confirmationTokenService, AuthenticationManager authenticationManager, UserDetailsService userDetailsService, JwtUtils jwtUtils) {
         this.emailService = emailService;
         this.userService = userService;
         this.confirmationTokenService = confirmationTokenService;
+        this.authenticationManager = authenticationManager;
+        this.userDetailsService = userDetailsService;
+        this.jwtUtils = jwtUtils;
     }
 
     public String register(RegistrationRequest request) {
@@ -35,14 +47,14 @@ public class RegistrationService {
             throw new CustomException("email not valid", HttpStatus.NOT_ACCEPTABLE);
         }
         String token = signUpUser(new UserApp(
-                request.getFirstName(),
-                request.getLastName(),
+                request.getFirstname(),
+                request.getLastname(),
                 request.getEmail(),
                 request.getPassword(),
                 Role.ROLE_USER
         ));
         String confirmationLink = localhost + "/registration/confirm?token=" + token;
-        emailService.sendEmail("hbenhim@sequantis.com", emailService.buildEmail(request.getFirstName(), confirmationLink));
+        emailService.sendEmail(request.getEmail(), emailService.buildEmail(request.getFirstname(), confirmationLink));
         return token;
     }
 
@@ -93,6 +105,8 @@ public class RegistrationService {
         userService.enableUser(confirmationToken.getUser().getUsername());
         return "confirmed";
     }
+
+
 }
 
 

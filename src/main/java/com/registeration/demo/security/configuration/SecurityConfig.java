@@ -46,6 +46,7 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter {
     @Override
     protected void configure(HttpSecurity http) throws Exception {
         CustomAuthenticationFilter customAuthenticationFilter = new CustomAuthenticationFilter(authenticationManagerBean(),jwtUtils, secretKey);
+        customAuthenticationFilter.setFilterProcessesUrl("/registration/login");
         http.csrf().disable()
                 .sessionManagement().sessionCreationPolicy(SessionCreationPolicy.STATELESS);
         http.authorizeRequests().antMatchers(permittedUrls()).permitAll();
@@ -56,7 +57,7 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter {
         http.addFilterBefore(new CustomAuthorizationFilter(jwtUtils), UsernamePasswordAuthenticationFilter.class);
     }
     private  String[] permittedUrls(){
-        return new String[]{"/","/login","/registration/signup", "/registration/confirm", "/registration/student/**", "/actuator/health"} ;
+        return new String[]{"/","/registration/login","/registration/signup", "/registration/confirm", "/registration/student/**", "/actuator/health"} ;
     }
     private  String[] permittedGetUrlsForAdmins(){
         return new String[]{"/api/users"} ;
